@@ -25,7 +25,6 @@ public:
 
 protected:
     void keyPressEvent(QKeyEvent *ev);
-    void resizeEvent(QResizeEvent *);
 
 private:
     DocumentViewWidget* currentlyVisibleDvw(void);

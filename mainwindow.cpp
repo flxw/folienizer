@@ -76,7 +76,12 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 MainWindow::~MainWindow()  {
-    /* save the data from the lecture tree */
+    /* save the data from the lecture tree
+     * but close any remaining tabs first */
+    while (ui->tabWidget->count()) {
+        closeDocumentTab(0);
+    }
+
     lectureModel->saveToDisk(folienizerXmlLocation);
 
     delete ui;
@@ -90,15 +95,6 @@ void MainWindow::keyPressEvent(QKeyEvent *ev) {
         case Qt::Key_X: toggleCommentWindow(); ev->ignore(); break;
         case Qt::Key_F: toggleSearchWindow(); ev->ignore(); break;
     }
-}
-
-void MainWindow::resizeEvent(QResizeEvent *) {
-//    DocumentViewWidget *dvw = static_cast<DocumentViewWidget*>(this->ui->tabWidget->currentWidget());
-
-//    if (!dvw) return;
-
-//    dvw->reloadAfterResize();
-//    QWidget::resizeEvent(event);
 }
 
 /* === private methods definition ============ */
@@ -167,7 +163,7 @@ void MainWindow::closeDocumentTab(const int &tabIndex) {
 
     /* remove tab, save its last page and mark as closed */
     ui->tabWidget->removeTab(tabIndex);
-    ((LectureItem*)dvw)->setLastPageIndex(dvw->getCurrentPageIndex());
+    ((LectureItem*)dvw->getLectureItem())->setLastPageIndex(dvw->getCurrentPageIndex());
     ((LectureItem*)dvw->getLectureItem())->setOpened(false);
 
     /* put the document inside the event loop and kiss it goodbuey */
