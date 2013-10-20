@@ -85,7 +85,7 @@
       <property name="editTriggers">
        <set>QAbstractItemView::SelectedClicked</set>
       </property>
-      <property name="dragEnabled">
+      <property name="alternatingRowColors">
        <bool>true</bool>
       </property>
       <property name="headerHidden">
@@ -104,7 +104,7 @@
      <x>0</x>
      <y>0</y>
      <width>656</width>
-     <height>27</height>
+     <height>28</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

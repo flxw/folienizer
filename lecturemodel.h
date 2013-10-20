@@ -26,6 +26,7 @@ public:
     int columnCount(const QModelIndex&) const;
 
     bool setData(const QModelIndex &index, const QVariant &value, int role);
+
     bool insertSemester(const QString& name);
     bool insertLecture(const QModelIndex& par, const QString &name);
     bool insertLectureSlide(const QModelIndex &par, const QString &fn, const QString &fl);
