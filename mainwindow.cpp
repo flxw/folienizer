@@ -316,11 +316,13 @@ void MainWindow::addLectureSlides() {
                                       QString("*.pdf"));
 # endif
 
-    /* get active item because the dialog is blocking, we can do this */
+    /* get active item - because the dialog is blocking, we can do this */
     QModelIndex curIndex = this->ui->treeView->selectionModel()->currentIndex();
 
     for (QStringList::const_iterator it = fnList.begin(); it != fnList.end(); ++it) {
-        lectureModel->insertLectureSlide(curIndex, it->right(it->lastIndexOf("/")), *it);
+        QFileInfo fi(*it);
+
+        lectureModel->insertLectureSlide(curIndex, fi.fileName().left(fi.fileName().lastIndexOf(".")), *it);
     }
 }
 
@@ -329,9 +331,9 @@ void MainWindow::addLectureLecture() {
     QModelIndex curIndex = this->ui->treeView->selectionModel()->currentIndex();
 
 # ifdef QT_DEBUG
-    lecName = "testLect";
+    lecName = QString("testLect");
 # else
-    // get a dialog up and running
+    lecName = tr("New lecture");
 # endif
 
     lectureModel->insertLecture(curIndex, lecName);
@@ -343,7 +345,7 @@ void MainWindow::addLectureSemester() {
 # ifdef QT_DEBUG
     sname = "SS2014";
 # else
-    // get a dialog up and running
+    sname = tr("New semester");
 # endif
 
     lectureModel->insertSemester(sname);
