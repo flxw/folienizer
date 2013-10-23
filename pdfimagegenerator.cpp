@@ -97,17 +97,21 @@ void PdfImageGenerator::startGeneration(void) {
         img       = generateImage(page);
 
         if (!img.isNull()) {
+            /* image size estimation */
             if (this->passes < this->minpasses) {
                 ++passes;
                 avgw += img.width();
                 avgh += img.height();
             }
 
+            /* search result highlight
+             * cuts out the highlighted word and darkens the rest of the page */
             if (highlight.isValid()) {
                 QRect highlightRect = scaleHighlightRect(highlight);
                 highlightRect.adjust(-2, -2, 2, 2);
                 QImage hImage = img.copy(highlightRect);
                 QPainter painter;
+
                 painter.begin(&img);
                 painter.fillRect(img.rect(), QColor(0, 0, 0, 32));
                 painter.drawImage(highlightRect, hImage);
