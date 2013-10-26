@@ -7,7 +7,7 @@
 
 class LectureItem {
 public:
-    enum TYPE {LECTURE, LECTSLIDES, SLIDE, LECTTASKS, TASK, SEMESTER, ROOTITEM};
+    enum TYPE {LECTURE, LECTSLIDES, SLIDE, LECTTASKS, TASK, LECTBOOKS, BOOK, SEMESTER, ROOTITEM};
 
     LectureItem(QString name, QString data, TYPE t, LectureItem *parent = 0);
     ~LectureItem();
@@ -15,7 +15,6 @@ public:
     LectureItem *parent(void);
     LectureItem *child(int i);
     LectureItem *appendChild(TYPE t, const QString &disp, const QString &data);
-
 
     QVariant getDisplayName(void) const;
     bool setDisplayName(const QVariant &value);

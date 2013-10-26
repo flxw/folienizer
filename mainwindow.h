@@ -51,8 +51,15 @@ public slots:
     void handleLectureCustomContext(QPoint where);
 
     void addLectureSlides(void);
-    void addLectureLecture(void);
+
+    void LM_addLectureWithBooks(void);
+    void LM_addLectureWithBooksWithExercises(void);
+    void LM_addLectureWithExercises(void);
+    void addLectureLecture(const bool &we = false, const bool &wb = false);
+
     void addLectureSemester(void);
+    void addBooksToLecture(void);
+    void addTasksToLecture(void);
     void removeLectureItem(void);
     void changeSlidePath(void);
 

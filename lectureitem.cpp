@@ -127,6 +127,8 @@ bool LectureItem::writeToXmlStream(QXmlStreamWriter &x) {
         case SLIDE:      tagName = "SLIDE";      break;
         case LECTTASKS:  tagName = "LECTTASKS";  break;
         case TASK:       tagName = "TASK";       break;
+        case LECTBOOKS:  tagName = "LECTBOOKS";  break;
+        case BOOK:       tagName = "BOOK";       break;
         case SEMESTER:   tagName = "SEMESTER";   break;
         case ROOTITEM:   tagName = "ROOTITEM";   break;
     }

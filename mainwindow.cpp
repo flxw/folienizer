@@ -91,9 +91,9 @@ MainWindow::~MainWindow()  {
 /* === protected method definition =========== */
 void MainWindow::keyPressEvent(QKeyEvent *ev) {
     switch (ev->key()) {
-        case Qt::Key_C: toggleContinuousView(); ev->ignore(); break;
-        case Qt::Key_X: toggleCommentWindow(); ev->ignore(); break;
-        case Qt::Key_F: toggleSearchWindow(); ev->ignore(); break;
+    case Qt::Key_C: toggleContinuousView(); ev->ignore(); break;
+    case Qt::Key_X: toggleCommentWindow(); ev->ignore(); break;
+    case Qt::Key_F: toggleSearchWindow(); ev->ignore(); break;
     }
 }
 
@@ -186,12 +186,12 @@ void MainWindow::switchTabInfo() {
 
     /* set current zoom levels in zoom menu */
     switch (dvw->getZoom()) {
-        case DocumentViewWidget::FITHEIGHT:       this->ui->actionFit_page_height->setChecked(true); break;
-        case DocumentViewWidget::FITWIDTH:        this->ui->actionFit_page_width->setChecked(true);  break;
-        case DocumentViewWidget::ONEHUNDRED:      this->ui->action100->setChecked(true);             break;
-        case DocumentViewWidget::ONEHUNDREDFIFTY: this->ui->action150->setChecked(true);             break;
-        case DocumentViewWidget::TWOHUNDRED:      this->ui->action200->setChecked(true);             break;
-        default: Q_ASSERT("Some not supported zoom level!");                                          break;
+    case DocumentViewWidget::FITHEIGHT:       this->ui->actionFit_page_height->setChecked(true); break;
+    case DocumentViewWidget::FITWIDTH:        this->ui->actionFit_page_width->setChecked(true);  break;
+    case DocumentViewWidget::ONEHUNDRED:      this->ui->action100->setChecked(true);             break;
+    case DocumentViewWidget::ONEHUNDREDFIFTY: this->ui->action150->setChecked(true);             break;
+    case DocumentViewWidget::TWOHUNDRED:      this->ui->action200->setChecked(true);             break;
+    default: Q_ASSERT("Some not supported zoom level!");                                          break;
     }
 
     /* show current page in statusbar */
@@ -242,20 +242,20 @@ void MainWindow::setSidebarContent(QAction *act) {
     disconnect(this->ui->treeView);
 
     switch (act->data().toInt()) {
-        case 0: break;
+    case 0: break;
 
-        case 1:
-            this->ui->treeView->setModel(lectureModel);
-            connect(this->ui->treeView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(handleLectureCustomContext(QPoint)));
-            connect(this->ui->treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(handleLectureSelection(QModelIndex)));
-            break;
+    case 1:
+        this->ui->treeView->setModel(lectureModel);
+        connect(this->ui->treeView, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(handleLectureCustomContext(QPoint)));
+        connect(this->ui->treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(handleLectureSelection(QModelIndex)));
+        break;
 
-        case 2:
-            DocumentViewWidget *dvw = currentlyVisibleDvw();
-            if (!dvw) { checked = false; break; }
-            this->ui->treeView->setModel(dvw->getTocDomModel());
-            connect(this->ui->treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(handleTocSelection(QModelIndex)));
-            break;
+    case 2:
+        DocumentViewWidget *dvw = currentlyVisibleDvw();
+        if (!dvw) { checked = false; break; }
+        this->ui->treeView->setModel(dvw->getTocDomModel());
+        connect(this->ui->treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(handleTocSelection(QModelIndex)));
+        break;
     }
 
     act->setChecked(checked);
@@ -266,8 +266,11 @@ void MainWindow::setSidebarContent(QAction *act) {
 
 void MainWindow::handleLectureSelection(QModelIndex index) {
     LectureItem* litem = (LectureItem*)index.internalPointer();
+    bool        isGood = litem->getType() == LectureItem::SLIDE ||
+            litem->getType() == LectureItem::BOOK  ||
+            litem->getType() == LectureItem::TASK;
 
-    if (litem->getType() == LectureItem::SLIDE && !litem->getOpened()) {
+    if (isGood && !litem->getOpened()) {
         openDocumentTab(litem);
     }
 }
@@ -281,19 +284,35 @@ void MainWindow::handleLectureCustomContext(QPoint where) {
         switch (currentItem->getType()) {
             case LectureItem::SEMESTER:
                 menu.addAction(tr("Add lecture"), this, SLOT(addLectureLecture()));
+                menu.addAction(tr("Add lecture /w books"), this, SLOT(LM_addLectureWithBooks()));
+                menu.addAction(tr("Add lecture /w books /w exercises"), this, SLOT(LM_addLectureWithBooksWithExercises()));
+                menu.addAction(tr("Add lecture /w exercises"), this, SLOT(LM_addLectureWithExercises()));
+
                 menu.addAction(tr("Remove semester"), this, SLOT(removeLectureItem()));
                 break;
 
             case LectureItem::LECTURE:
+                menu.addAction(tr("Remove lecture"), this, SLOT(removeLectureItem()));
+                break;
+
             case LectureItem::LECTSLIDES:
                 menu.addAction(tr("Add slide(s)"), this, SLOT(addLectureSlides()));
-                menu.addAction(tr("Remove lecture"), this, SLOT(removeLectureItem()));
                 break;
 
             case LectureItem::SLIDE:
                 menu.addAction(tr("Change PDF"), this, SLOT(changeSlidePath()));
                 menu.addAction(tr("Remove slide"), this, SLOT(removeLectureItem()));
                 break;
+// TODO: put in the correct words and create new slots for BOOK and TASK respectively
+/*            case LectureItem::TASK:
+                menu.addAction(tr("Change PDF"), this, SLOT(changeSlidePath()));
+                menu.addAction(tr("Remove slide"), this, SLOT(removeLectureItem()));
+                break;
+
+            case LectureItem::BOOK:
+                menu.addAction(tr("Change PDF"), this, SLOT(changeSlidePath()));
+                menu.addAction(tr("Remove slide"), this, SLOT(removeLectureItem()));
+                break;*/
 
             default: break;
         }
@@ -308,12 +327,12 @@ void MainWindow::addLectureSlides() {
     QStringList fnList;
 
 # ifdef QT_DEBUG
-    fnList.append(QString("/home/felix/secsem/dbs1/DBS1_01_Einfuehrung.pdf"));
+    fnList.append(QString("/home/felix/archive/studies/second_semester/dbs1/DBS1_01_Einfuehrung.pdf"));
 # else
     fnList = QFileDialog::getOpenFileNames(this,
-                                      tr("Select one or several slide sets to add"),
-                                      QDir::homePath(),
-                                      QString("*.pdf"));
+                                           tr("Select one or several slide sets to add"),
+                                           QDir::homePath(),
+                                           QString("*.pdf"));
 # endif
 
     /* get active item - because the dialog is blocking, we can do this */
@@ -326,29 +345,77 @@ void MainWindow::addLectureSlides() {
     }
 }
 
-void MainWindow::addLectureLecture() {
+void MainWindow::LM_addLectureWithBooks(void) {
+    addLectureLecture(false, true);
+}
+
+void MainWindow::LM_addLectureWithBooksWithExercises(void) {
+    addLectureLecture(true, true);
+}
+
+void MainWindow::LM_addLectureWithExercises(void) {
+    addLectureLecture(true, false);
+}
+
+void MainWindow::addLectureLecture(const bool &we, const bool &wb) {
     QString lecName;
     QModelIndex curIndex = this->ui->treeView->selectionModel()->currentIndex();
 
-# ifdef QT_DEBUG
-    lecName = QString("testLect");
-# else
     lecName = tr("New lecture");
-# endif
 
-    lectureModel->insertLecture(curIndex, lecName);
+    lectureModel->insertLecture(curIndex, lecName, we, wb);
 }
 
 void MainWindow::addLectureSemester() {
     QString sname;
 
-# ifdef QT_DEBUG
-    sname = "SS2014";
-# else
     sname = tr("New semester");
-# endif
 
     lectureModel->insertSemester(sname);
+}
+
+void MainWindow::addBooksToLecture() {
+    QStringList fnList;
+
+# ifdef QT_DEBUG
+    fnList.append(QString("/home/felix/archive/studies/second_semester/dbs1/DBS1_01_Einfuehrung.pdf"));
+# else
+    fnList = QFileDialog::getOpenFileNames(this,
+                                           tr("Select one or several books to add"),
+                                           QDir::homePath(),
+                                           QString("*.pdf"));
+# endif
+
+    /* get active item - because the dialog is blocking, we can do this */
+    QModelIndex curIndex = this->ui->treeView->selectionModel()->currentIndex();
+
+    for (QStringList::const_iterator it = fnList.begin(); it != fnList.end(); ++it) {
+        QFileInfo fi(*it);
+
+        lectureModel->insertLectureSlide(curIndex, fi.fileName().left(fi.fileName().lastIndexOf(".")), *it);
+    }
+}
+
+void MainWindow::addTasksToLecture() {
+    QStringList fnList;
+
+# ifdef QT_DEBUG
+    fnList.append(QString("/home/felix/archive/studies/second_semester/dbs1/DBS1_01_Einfuehrung.pdf"));
+# else
+    fnList = QFileDialog::getOpenFileNames(this,
+                                           tr("Select one or several exercises to add"),
+                                           QDir::homePath(),
+                                           QString("*.pdf"));
+# endif
+
+    /* get active item - because the dialog is blocking, we can do this */
+    QModelIndex curIndex = this->ui->treeView->selectionModel()->currentIndex();
+
+    for (QStringList::const_iterator it = fnList.begin(); it != fnList.end(); ++it) {
+        QFileInfo fi(*it);
+
+        lectureModel->insertLectureSlide(curIndex, fi.fileName().left(fi.fileName().lastIndexOf(".")), *it);
+    }
 }
 
 void MainWindow::removeLectureItem() {

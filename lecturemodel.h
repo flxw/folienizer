@@ -28,9 +28,9 @@ public:
     bool setData(const QModelIndex &index, const QVariant &value, int role);
 
     bool insertSemester(const QString& name);
-    bool insertLecture(const QModelIndex& par, const QString &name);
+    bool insertLecture(const QModelIndex& par, const QString &name, const bool &wtasks, const bool &wbooks);
     bool insertLectureSlide(const QModelIndex &par, const QString &fn, const QString &fl);
-    bool insertExerciseSlide(const QModelIndex &par, QString fn);
+    bool insertExerciseSlide(const QModelIndex &par, const QString &fn, const QString &fl);
 
     bool removeRow(const QModelIndex &index);
 

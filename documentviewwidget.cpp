@@ -165,7 +165,8 @@ bool DocumentViewWidget::hasTocDomModel() {
 void DocumentViewWidget::gotoPageViaTocIndex(const QModelIndex &index) {
     if (!index.isValid()) return;
 
-    Poppler::LinkDestination ld(this->tocDomModel->getLinkStringFromIndex(index));
+    QString dest = this->tocDomModel->getLinkStringFromIndex(index);
+    Poppler::LinkDestination ld(dest);
 
     gotoPage(ld.pageNumber()-1);
 

@@ -81,18 +81,29 @@ bool LectureModel::insertSemester(const QString& name) {
     return insertLectureItem(QModelIndex(), LectureItem::SEMESTER, name);
 }
 
-bool LectureModel::insertLecture(const QModelIndex& par, const QString &name) {
+bool LectureModel::insertLecture(const QModelIndex& par, const QString &name, const bool &wtasks, const bool &wbooks) {
     if (!par.isValid()) return false;
 
-    return insertLectureItem(par, LectureItem::LECTURE, name);
+    bool ret       = insertLectureItem(par, LectureItem::LECTURE, name);
+
+    if (!wtasks && !wbooks) return ret;
+
+    LectureItem* it = getItem(par)->child(getItem(par)->childCount() - 1);
+
+    it->appendChild(LectureItem::LECTSLIDES, tr("slides"), QString());
+
+    if (wtasks) it->appendChild(LectureItem::LECTTASKS, tr("tasks"), QString());
+    if (wbooks) it->appendChild(LectureItem::LECTBOOKS, tr("books"), QString());
+
+    return ret;
 }
 
 bool LectureModel::insertLectureSlide(const QModelIndex &par, const QString &fn, const QString &fl) {
     return insertLectureItem(par, LectureItem::SLIDE, fn, fl);
 }
 
-bool LectureModel::insertExerciseSlide(const QModelIndex &par, QString fn) {
-    return false;
+bool LectureModel::insertExerciseSlide(const QModelIndex &par, const QString &fn, const QString &fl) {
+    return insertLectureItem(par, LectureItem::TASK, fn, fl);
 }
 
 bool LectureModel::removeRow(const QModelIndex &index) {
@@ -141,13 +152,23 @@ bool LectureModel::loadFromDisk(const QString &where) {
         QXmlStreamAttributes attrs = xmlReader.attributes();
 
         if (tt == QXmlStreamReader::StartElement) {
-            /* find out the tag name and set ROOTITEM if its the rootItem/not implemented yet */
+            /* find out the tag name and set ROOTITEM if its the rootItem */
             if (xmlReader.name() == QString("SEMESTER")) {
                 itemType = LectureItem::SEMESTER;
             } else if (xmlReader.name() == QString("LECTURE")) {
                 itemType = LectureItem::LECTURE;
+            } else if (xmlReader.name() == QString("LECTSLIDES")) {
+                itemType = LectureItem::LECTSLIDES;
             } else if (xmlReader.name() == QString("SLIDE")) {
                 itemType = LectureItem::SLIDE;
+            } else if (xmlReader.name() == QString("LECTTASKS")) {
+                itemType = LectureItem::LECTTASKS;
+            } else if (xmlReader.name() == QString("TASK")) {
+                itemType = LectureItem::TASK;
+            } else if (xmlReader.name() == QString("LECTBOOKS")) {
+                itemType = LectureItem::LECTBOOKS;
+            } else if (xmlReader.name() == QString("BOOK")) {
+                itemType = LectureItem::BOOK;
             } else if (xmlReader.name() == QString("COMMENT")) {
                 lastItem->setComment(attrs.value("page").toString().toInt(), attrs.value("value").toString());
                 continue;
