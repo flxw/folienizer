@@ -106,6 +106,10 @@ bool LectureModel::insertExerciseSlide(const QModelIndex &par, const QString &fn
     return insertLectureItem(par, LectureItem::TASK, fn, fl);
 }
 
+bool LectureModel::insertBook(const QModelIndex &par, const QString &fn, const QString &fl) {
+    return insertLectureItem(par, LectureItem::BOOK, fn, fl);
+}
+
 bool LectureModel::removeRow(const QModelIndex &index) {
     if (index.isValid()) {
         LectureItem* item = (LectureItem*)index.internalPointer();

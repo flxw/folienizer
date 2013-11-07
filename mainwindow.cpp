@@ -180,18 +180,20 @@ void MainWindow::setZoom(QAction *act) {
 }
 
 void MainWindow::switchTabInfo() {
-    DocumentViewWidget *dvw = currentlyVisibleDvw();
+    DocumentViewWidget *dvw  = currentlyVisibleDvw();
 
     if (!dvw) return;
+    /* everything that accesses dvw needs to be below this check! */
+    LectureItem* dvwLectItem = (LectureItem*) dvw->getLectureItem();
 
     /* set current zoom levels in zoom menu */
     switch (dvw->getZoom()) {
-    case DocumentViewWidget::FITHEIGHT:       this->ui->actionFit_page_height->setChecked(true); break;
-    case DocumentViewWidget::FITWIDTH:        this->ui->actionFit_page_width->setChecked(true);  break;
-    case DocumentViewWidget::ONEHUNDRED:      this->ui->action100->setChecked(true);             break;
-    case DocumentViewWidget::ONEHUNDREDFIFTY: this->ui->action150->setChecked(true);             break;
-    case DocumentViewWidget::TWOHUNDRED:      this->ui->action200->setChecked(true);             break;
-    default: Q_ASSERT("Some not supported zoom level!");                                          break;
+        case DocumentViewWidget::FITHEIGHT:       this->ui->actionFit_page_height->setChecked(true); break;
+        case DocumentViewWidget::FITWIDTH:        this->ui->actionFit_page_width->setChecked(true);  break;
+        case DocumentViewWidget::ONEHUNDRED:      this->ui->action100->setChecked(true);             break;
+        case DocumentViewWidget::ONEHUNDREDFIFTY: this->ui->action150->setChecked(true);             break;
+        case DocumentViewWidget::TWOHUNDRED:      this->ui->action200->setChecked(true);             break;
+        default: Q_ASSERT("Some not supported zoom level!");                                          break;
     }
 
     /* show current page in statusbar */
@@ -202,10 +204,12 @@ void MainWindow::switchTabInfo() {
 
     /* update comments shown */
     QString tmp = ui->commentWindow->toPlainText();
+
     if (lastViewedDvw) {
         ((LectureItem*)lastViewedDvw->getLectureItem())->setComment(lastViewedDvw->getCurrentPageIndex(), tmp);
     }
-    ui->commentWindow->setPlainText(((LectureItem*)dvw->getLectureItem())->getComment(dvw->getCurrentPageIndex()));
+
+    ui->commentWindow->setPlainText(dvwLectItem->getComment(dvw->getCurrentPageIndex()));
 
     /* renew signal connections */
     disconnect(dvw, SIGNAL(pageChanged(int,int)));
@@ -292,6 +296,7 @@ void MainWindow::handleLectureCustomContext(QPoint where) {
                 break;
 
             case LectureItem::LECTURE:
+                menu.addAction(tr("Add slide(s)"), this, SLOT(addLectureSlides()));
                 menu.addAction(tr("Remove lecture"), this, SLOT(removeLectureItem()));
                 break;
 
@@ -303,16 +308,24 @@ void MainWindow::handleLectureCustomContext(QPoint where) {
                 menu.addAction(tr("Change PDF"), this, SLOT(changeSlidePath()));
                 menu.addAction(tr("Remove slide"), this, SLOT(removeLectureItem()));
                 break;
-// TODO: put in the correct words and create new slots for BOOK and TASK respectively
-/*            case LectureItem::TASK:
+
+            case LectureItem::LECTTASKS:
+                menu.addAction(tr("Add exercises"), this, SLOT(addTasksToLecture()));
+                break;
+
+            case LectureItem::TASK:
                 menu.addAction(tr("Change PDF"), this, SLOT(changeSlidePath()));
                 menu.addAction(tr("Remove slide"), this, SLOT(removeLectureItem()));
+                break;
+
+            case LectureItem::LECTBOOKS:
+                menu.addAction(tr("Add books"), this, SLOT(addBooksToLecture()));
                 break;
 
             case LectureItem::BOOK:
                 menu.addAction(tr("Change PDF"), this, SLOT(changeSlidePath()));
                 menu.addAction(tr("Remove slide"), this, SLOT(removeLectureItem()));
-                break;*/
+                break;
 
             default: break;
         }
@@ -392,7 +405,7 @@ void MainWindow::addBooksToLecture() {
     for (QStringList::const_iterator it = fnList.begin(); it != fnList.end(); ++it) {
         QFileInfo fi(*it);
 
-        lectureModel->insertLectureSlide(curIndex, fi.fileName().left(fi.fileName().lastIndexOf(".")), *it);
+        lectureModel->insertBook(curIndex, fi.fileName().left(fi.fileName().lastIndexOf(".")), *it);
     }
 }
 
@@ -414,7 +427,7 @@ void MainWindow::addTasksToLecture() {
     for (QStringList::const_iterator it = fnList.begin(); it != fnList.end(); ++it) {
         QFileInfo fi(*it);
 
-        lectureModel->insertLectureSlide(curIndex, fi.fileName().left(fi.fileName().lastIndexOf(".")), *it);
+        lectureModel->insertExerciseSlide(curIndex, fi.fileName().left(fi.fileName().lastIndexOf(".")), *it);
     }
 }
 

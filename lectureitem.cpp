@@ -10,7 +10,9 @@ LectureItem::LectureItem(QString name, QString data, TYPE t, LectureItem *parent
     lastPage    = DEFAULT_LAST_PAGE;
     opened      = false;
 
-    if (t == LectureItem::SLIDE) {
+    if (t == LectureItem::SLIDE ||
+        t == LectureItem::BOOK  ||
+        t == LectureItem::TASK) {
         commentHash = new QHash<int,QString>;
     } else {
         commentHash = NULL;
@@ -137,7 +139,7 @@ bool LectureItem::writeToXmlStream(QXmlStreamWriter &x) {
     x.writeAttribute("displayName", this->displayName.toString());
     x.writeAttribute("itemdata", this->itemdata.toString());
 
-    if (this->type == SLIDE) {
+    if (type == SLIDE || type == BOOK || type == TASK) {
         for (QHash<int,QString>::const_iterator it = commentHash->begin(); it != commentHash->end(); ++it) {
             if (!it.value().isEmpty()) {
                 x.writeStartElement("COMMENT");
