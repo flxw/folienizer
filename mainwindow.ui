@@ -13,6 +13,38 @@
   <property name="windowTitle">
    <string>folienizer</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QMenuBar {
+	border-bottom: 1px solid #268bd2;
+}
+
+QMenuBar,
+QMenu {
+	margin: 0;
+	padding: 0;
+}
+
+QMenu::item#menuZoom,
+QMenu::item#menuSidebar {
+	margin: 0;
+	padding: 2px 2px 2px 15px;
+}
+
+QMenuBar::item:selected,
+QMenu::item:selected {
+	color: #ffffff;
+	background-color: #268bd2;
+}
+
+QMenu::item:disabled {
+	visible: false;
+}
+
+* {
+	background-color: #ffffff;
+	color: #586e75;
+}</string>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="1">
@@ -29,11 +61,26 @@
         <height>0</height>
        </size>
       </property>
+      <property name="styleSheet">
+       <string notr="true">* {
+	background-color: #ffffff;
+	color: #586e75;
+}
+
+QMenuBar {
+	border-bottom: 1px solid #268bd2;
+}
+
+QMenu:enabled {
+	color: #ffffff;
+	background-color: #268bd2;
+}</string>
+      </property>
       <property name="tabPosition">
        <enum>QTabWidget::North</enum>
       </property>
       <property name="tabShape">
-       <enum>QTabWidget::Rounded</enum>
+       <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
        <number>-1</number>
@@ -104,7 +151,7 @@
      <x>0</x>
      <y>0</y>
      <width>656</width>
-     <height>28</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
